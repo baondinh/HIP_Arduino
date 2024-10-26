@@ -1,7 +1,7 @@
 PSEUDOCODE
 
-bool processing = false; // Feedback variable
-int timer = 0; // Timer to track rocket 
+bool active = false; // Feedback variable
+int timer = 0; // Timer to track rocket firing time
 
 void setup(){
   Serial.begin(9600); // Serial communication 9600 bits per second
@@ -18,13 +18,20 @@ void setup(){
 void loop() {
   delay(500) // 0.5s delay between readings
   int buttonState = digitalRead(5); // D2 button signal read
-  if (buttonState == 1 && !processing) {	
+  if (buttonState == 1 && !active) {	
     processing = true; // To prevent redundant signals if someone spams button
     digitalWrite(12, 1); // D9 Digital signal to open solenoid
     digitalWrite(11, 1); // D8 Digital signal to light E-match
+    digitalWrite(11, 0); // D8 Digital signal to turn-off E-match
   } 
   data = digitalRead(10); // D7 Read data from ADC 
   digitalWrite(14, data); // D11 send data to MOSI 
-  if digitalRead(16) - 
+  if processing {
+    timer += 0.5;
+    if timer == 3 {
+      digitalWrite(12, 0); // D9 Digital signal to close solenoid
+      active = false; // Reset active status
+      timer = 0; // Reset timer
+    }
+  }
 }
-
