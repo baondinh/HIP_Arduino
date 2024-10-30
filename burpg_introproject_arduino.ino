@@ -28,19 +28,32 @@
 //   // if 
 // } 
 
+// CSB: pin 10 chip select pin
+// MOSI: pin 11
+// MISO: pin 12
+// SCK: pin 13
+// the sensor communicates using SPI, so include the library:
+#include <SPI.h>
+
 bool active = false; // Feedback variable
 int timer = 0; // Timer to track rocket firing time
 
+int chipSelectPin = 10; 
 void setup(){
   Serial.begin(9600); // Serial communication 9600 bits per second
+  // Start SPI library
+  SPI.begin();
+  
   pinMode(5, INPUT);	// D2 INPUT, digital signal from button
   pinMode(11, OUTPUT); // D8 OUTPUT, use as signal to E-match
   pinMode(12, OUTPUT); // D9 OUTPUT, use as signal to solenoid
   pinMode(13, OUTPUT); // D10 OUTPUT, should be set to 0 to select SD card for communication
-  pinMode(14, OUTPUT); // D11 OUTPUT, MOSI line to SD card 
-  pinMode(15, OUTPUT); // D12 OUTPUT, MISO line to SD card 
-  pinMode(16, OUTPUT); // D13 OUTPUT, use as digital clk
-  digitalWrite(13, 0); // Client select
+  
+  // These pins should be controlled by SPI library
+  // pinMode(14, OUTPUT); // D11 OUTPUT, MOSI line to SD card 
+  // pinMode(15, OUTPUT); // D12 OUTPUT, MISO line to SD card 
+  // pinMode(16, OUTPUT); // D13 OUTPUT, use as digital clk
+  // digitalWrite(13, 0); // Client select
 }
 
 void loop() {
@@ -65,6 +78,11 @@ void loop() {
       timer = 0; // Reset timer
     }
   }
+}
+
+int readRegister(byte thisRegister, int bytesToRead) {
+  byte inByte = 0; 
+  
 }
 
 // Other functions to implement
