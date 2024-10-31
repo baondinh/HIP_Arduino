@@ -57,6 +57,8 @@ void setup(){
   // digitalWrite(13, 0); // Client select
 }
 
+
+// Change delay to timer instead
 void loop() {
   delay(500); // 0.5s delay between readings
   int buttonState = digitalRead(5); // D2 button signal read
