@@ -47,7 +47,8 @@ void setup(){
   pinMode(5, INPUT);	// D2 INPUT, digital signal from button
   pinMode(11, OUTPUT); // D8 OUTPUT, use as signal to E-match
   pinMode(12, OUTPUT); // D9 OUTPUT, use as signal to solenoid
-  pinMode(13, OUTPUT); // D10 OUTPUT, should be set to 0 to select SD card for communication
+  pinMode(chipSelectPin, OUTPUT); // D10 OUTPUT, should be set to 0 to select SD card for communication
+  // pinMode(13, OUTPUT); // D10 OUTPUT, should be set to 0 to select SD card for communication
   
   // These pins should be controlled by SPI library
   // pinMode(14, OUTPUT); // D11 OUTPUT, MOSI line to SD card 
@@ -80,12 +81,33 @@ void loop() {
   }
 }
 
+// serial_data_interpretation → Interpreting 2’s complement 24 bits sent from ADC
 int readRegister(byte thisRegister, int bytesToRead) {
   byte inByte = 0; 
+  int result = 0; 
+
+  byte dataToSend = READ;
   
+  // LOW chip select to select SD card
+  digitalWrite(chipSelectPin, LOW); 
+  SPI.transfer(dataToSend); 
+
+  result = SPI.transfer(0x00);
+  bytesToRead--;
+
+  while (bytesToRead > 0) {
+    result = result << 8; 
+    inByte = SPI.transfer(0x00); 
+    result = result | inByte;
+    bytesToRead--;
+  }
+
+  digitalWrite(chipSelectPin, HIGH); 
+  return(result);   
 }
+
 
 // Other functions to implement
 // clk_signal → Serial Peripheral Interface (SPI)?
-// serial_data_interpretation → Interpreting 2’s complement 24 bits sent from ADC
+
 
