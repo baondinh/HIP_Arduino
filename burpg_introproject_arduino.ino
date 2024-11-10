@@ -1,5 +1,5 @@
-// To Do: 
-// Implement millis() instead of delay() function to track time
+// From HX711 sheet, OUT registers R4, R5, R7, R7 with R7 LSB
+
 // millis() is non-blocking while delay() is blocking --> Blocking: Pauses program instead of continuing program and noting time
 
 // CSB: pin 10 chip select pin
@@ -45,16 +45,19 @@ void loop() {
     delay(1000); // 1s pulse
     digitalWrite(8, 0); // D8 Digital signal to turn-off E-match
   } 
-  inByte = Serial.read();  // D0/RX Read serial data from ADC → 2’s complement 24 bits
+  // Serial.read() seems to only read one byte of available serial data from serial port object
+  // byte inByte = Serial.read();  // D0/RX Read serial data from ADC → 2’s complement 24 bits
+  // Serial.write(data); // D1/TX write serial data → Need to interpret 2’s complement 24 bits
+  
+  //Placeholding register for memory register of HX711 output
+  int thrust = readRegister(place_reg, 3);
 
   digitalWrite(11, x); // D11 send unknown value to MOSI
-  Serial.write(data); // D1/TX write serial data → Need to interpret 2’s complement 24 bits
   runningTime = millis(); // Keep track of running time
-  if active {
-    if (runningTime - startTime) >= 3000 { //3s
+  if (active) {
+    if ((runningTime - startTime) >= 3000) { //3s
       digitalWrite(9, 0); // D9 Digital signal to close solenoid
       active = false; // Reset active status
-      timer = 0; // Reset timer
     }
   }
 }
@@ -62,6 +65,7 @@ void loop() {
 // serial_data_interpretation → Interpreting 2’s complement 24 bits sent from ADC
 int readRegister(byte thisRegister, int bytesToRead) {
   byte inByte = 0; 
+  // No 24-bit data type, would need logic for the final result to be an integer
   int result = 0; 
 
   byte dataToSend = READ;
@@ -70,6 +74,7 @@ int readRegister(byte thisRegister, int bytesToRead) {
   digitalWrite(chipSelectPin, LOW); 
   SPI.transfer(dataToSend); 
 
+  // SPI transfer simultaneous send and receive
   result = SPI.transfer(0x00);
   bytesToRead--;
 
@@ -82,4 +87,16 @@ int readRegister(byte thisRegister, int bytesToRead) {
 
   digitalWrite(chipSelectPin, HIGH); 
   return(result);   
+}
+
+// Not used but included 
+void writeRegister(byte thisRegister, byte thisValue) {
+  byte dataToSend = thisRegister | WRITE;
+
+  digitalWrite(chipSelectPin, LOW); 
+
+  SPI.transfer(dataToSend); //Send register location 
+  SPI.transfer(thisValue); //Send value to record into register
+
+  digitalWrite(chipSelectPin, HIGH); 
 }
