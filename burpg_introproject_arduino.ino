@@ -42,8 +42,6 @@ void loop() {
     digitalWrite(9, 1); // D9 Digital signal to open solenoid
     digitalWrite(8, 1); // D8 Digital signal to light E-match
     startTime = millis(); // Begin tracking time (milliseconds since program started)
-    delay(1000); // 1s pulse
-    digitalWrite(8, 0); // D8 Digital signal to turn-off E-match
   } 
   // Serial.read() seems to only read one byte of available serial data from serial port object
   // byte inByte = Serial.read();  // D0/RX Read serial data from ADC → 2’s complement 24 bits
