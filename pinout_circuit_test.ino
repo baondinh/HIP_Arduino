@@ -1,5 +1,10 @@
 #include <SPI.h>
-#include <HX711_ADC.h>
+
+// After four tests of sending HIGH and LOW input signals to D2, the Arduino seems to freeze
+// There could be a short circuit or some sort of memory leak/overflow causing the Arduino to freeze
+
+// Load cell library (Commented out for testing)
+// #include <HX711_ADC.h>
 
 int period = 500;
 int counter = 0; 
@@ -17,29 +22,7 @@ void setup() {
 }
 
 void loop() {
-  // Send a byte to an SPI device and read the response
-      // byte data = SPI.transfer(0x55); 
-      // Serial.println(data);
-
-      // Send a hardcoded byte and receive the response
-      // byte sentData = 0x55;  // Example byte (0b01010101)
-      // byte receivedData = SPI.transfer(sentData);
-
-      // Print both sent and received data to Serial Monitor
-      // Serial.print("Sent: 0x");
-      // Serial.print(sentData, HEX);
-      // Serial.print(" | Received: 0x");
-      // Serial.println(receivedData, HEX);
-
-      // delay(500); 
       int buttonState = digitalRead(2);
-
-      // if (buttonState == HIGH) {     
-      //   Serial.println ("1");
-      // } 
-      // else {
-      //   Serial.println("0");
-      // }
 
       if (buttonState == 1) { 
         // active = true; // To prevent redundant signals if someone spams button
