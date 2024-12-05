@@ -5,3 +5,5 @@ Arduino Nano 3.0 Microcontroller for use in BURPG intro project
   - MISO: pin 12 (CIPO)
   - SCK: pin 13
 - SPI.h and SPI.cpp can be found in ArduinoCore-avr/libraries repo (added to project directory for faster viewing)
+
+- https://forum.arduino.cc/t/what-is-the-simpelest-way-to-read-hx711-data/970254/2 for HX711 reading
