@@ -8,93 +8,119 @@
 // SCK: pin 13
 // the sensor communicates using SPI, so include the library:
 #include <SPI.h>
+// #include <HX711_ADC.h>
 
 bool active = false; // Feedback variable
+
+// millis timings
 unsigned long startTime; 
 unsigned long runningTime;
-// int timer = 0; // Timer to track rocket firing time
+int period = 3000;
 
-int chipSelectPin = 10; 
+// Could also use analog pins
+// const int LOADCELL_DOUT_PIN = 4;
+// const int LOADCELL_SCK_PIN = 5;
+// HX711_ADC LoadCell(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN); 
+
+const int BUTTON_PIN = 2; 
+const int EMATCH_PIN = 8; 
+const int SOLENOID_PIN = 9; 
+const int SELECT_PIN = 10; 
+
 void setup(){
   Serial.begin(9600); // Serial communication 9600 bits per second
   // Start SPI library
   SPI.begin();
-  
-  pinMode(2, INPUT);	// D2 INPUT, digital signal from button
-  pinMode(8, OUTPUT); // D8 OUTPUT, use as signal to E-match
-  pinMode(9, OUTPUT); // D9 OUTPUT, use as signal to solenoid
-  pinMode(chipSelectPin, OUTPUT); // D10 OUTPUT, should be set to 0 to select SD card for communication
-  
-  // These pins should be controlled by SPI library
-  // pinMode(11, OUTPUT); // D11 OUTPUT, MOSI line to SD card 
-  // pinMode(12, OUTPUT); // D12 OUTPUT, MISO line to SD card 
-  // pinMode(13, OUTPUT); // D13 OUTPUT, use as digital clk
-  // digitalWrite(10, 0); // Client select
+
+  pinMode(BUTTON_PIN, INPUT);	// D2 INPUT, digital signal from button
+  pinMode(EMATCH_PIN, OUTPUT); // D8 OUTPUT, use as signal to E-match
+  pinMode(SOLENOID_PIN, OUTPUT); // D9 OUTPUT, use as signal to solenoid
+  pinMode(SELECT_PIN, OUTPUT); // D10 OUTPUT, should be set to 0 to select SD card for communication
+
+  // LoadCell.begin();
 }
 
 
 // Change delay to timer instead
 void loop() {
   // delay(500); // 0.5s delay between readings
-  int buttonState = digitalRead(2); // D2 button signal read
+  int buttonState = digitalRead(BUTTON_PIN); // D2 button signal read
   if (buttonState == 1 && !active) {	
-    active = true; // To prevent redundant signals if someone spams button
-    digitalWrite(9, 1); // D9 Digital signal to open solenoid
-    digitalWrite(8, 1); // D8 Digital signal to light E-match
-    startTime = millis(); // Begin tracking time (milliseconds since program started)
-  } 
-  // Serial.read() seems to only read one byte of available serial data from serial port object
-  // byte inByte = Serial.read();  // D0/RX Read serial data from ADC → 2’s complement 24 bits
-  // Serial.write(data); // D1/TX write serial data → Need to interpret 2’s complement 24 bits
-  
+    active = true; // To prevent redundant signals if someone spams button    
+    digitalWrite(SOLENOID_PIN, 1); // D9 Digital signal to open solenoid
+    delay(2000); 
+    digitalWrite(EMATCH_PIN, 1); // D8 Digital signal to light E-match
+    // readADC(); 
+    startTime = millis(); 
+  } else if (active) {
+    while (millis() < startTime + period) { 
+        // Non-blocking wait period to ensure 3 second firing before closing solenoid 
+        readADC();
+      }
+      digitalWrite(SOLENOID_PIN, 0); // D9 Digital signal LOW to close solenoid
+      active = false; // Reset active flag
+  } else { //Neutral state when button has not been pressed and there is no active ignition sequence
+    digitalWrite(SOLENOID_PIN, 0); // D9 Digital signal to open solenoid
+    digitalWrite(EMATCH_PIN, 0); // D8 Digital signal to light E-match
+  }
+ 
   //Placeholding register for memory register of HX711 output
-  int thrust = readRegister(place_reg, 3);
-
-  digitalWrite(11, x); // D11 send unknown value to MOSI
-  runningTime = millis(); // Keep track of running time
-  if (active) {
-    if ((runningTime - startTime) >= 3000) { //3s
-      digitalWrite(9, 0); // D9 Digital signal to close solenoid
-      active = false; // Reset active status
-    }
-  }
+  // int thrust = readRegister(place_reg, 3);
+  // digitalWrite(11, x); // D11 send unknown value to MOSI
 }
 
-// serial_data_interpretation → Interpreting 2’s complement 24 bits sent from ADC
-int readRegister(byte thisRegister, int bytesToRead) {
-  byte inByte = 0; 
-  // No 24-bit data type, would need logic for the final result to be an integer
-  int result = 0; 
+// Function to read HX711 output with HX711 library 
+// void readADC() {
+//     if (scale.is_ready()) {
+//           long reading = scale.read();
+//           Serial.print("HX711 reading: ");
+//           Serial.println(reading);
+//           if (reading >= limitValue){
+//               digitalWrite(switchPin, HIGH);   // turn the PIN on (HIGH is the voltage level)
+//           } else {
+//               digitalWrite(switchPin, LOW);    // turn the PIN off by making the voltage LOW
+//               delay(1000);
+//           }
+//       } else {
+//           Serial.println("HX711 not found.");
+//       }
+// }
 
-  byte dataToSend = READ;
+// // serial_data_interpretation → Interpreting 2’s complement 24 bits sent from ADC
+// int readRegister(byte thisRegister, int bytesToRead) {
+//   byte inByte = 0; 
+//   // No 24-bit data type, would need logic for the final result to be an integer
+//   int result = 0; 
+
+//   byte dataToSend = READ;
   
-  // LOW chip select to select SD card
-  digitalWrite(chipSelectPin, LOW); 
-  SPI.transfer(dataToSend); 
+//   // LOW chip select to select SD card
+//   digitalWrite(chipSelectPin, LOW); 
+//   SPI.transfer(dataToSend); 
 
-  // SPI transfer simultaneous send and receive
-  result = SPI.transfer(0x00);
-  bytesToRead--;
+//   // SPI transfer simultaneous send and receive
+//   result = SPI.transfer(0x00);
+//   bytesToRead--;
 
-  while (bytesToRead > 0) {
-    result = result << 8; 
-    inByte = SPI.transfer(0x00); 
-    result = result | inByte;
-    bytesToRead--;
-  }
+//   while (bytesToRead > 0) {
+//     result = result << 8; 
+//     inByte = SPI.transfer(0x00); 
+//     result = result | inByte;
+//     bytesToRead--;
+//   }
 
-  digitalWrite(chipSelectPin, HIGH); 
-  return(result);   
-}
+//   digitalWrite(chipSelectPin, HIGH); 
+//   return(result);   
+// }
 
-// Not used but included 
-void writeRegister(byte thisRegister, byte thisValue) {
-  byte dataToSend = thisRegister | WRITE;
+// // Not used but included 
+// void writeRegister(byte thisRegister, byte thisValue) {
+//   byte dataToSend = thisRegister | WRITE;
 
-  digitalWrite(chipSelectPin, LOW); 
+//   digitalWrite(chipSelectPin, LOW); 
 
-  SPI.transfer(dataToSend); //Send register location 
-  SPI.transfer(thisValue); //Send value to record into register
+//   SPI.transfer(dataToSend); //Send register location 
+//   SPI.transfer(thisValue); //Send value to record into register
 
-  digitalWrite(chipSelectPin, HIGH); 
-}
+//   digitalWrite(chipSelectPin, HIGH); 
+// }
