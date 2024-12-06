@@ -26,7 +26,7 @@ int period = 3000;
 
 const int BUTTON_PIN = 2; 
 const int EMATCH_PIN = 8; 
-const int SOLENOID_PIN = 9; 
+const int SOLENOID_PIN = 4; 
 const int SELECT_PIN = 10; 
 
 void setup(){
@@ -53,7 +53,7 @@ void loop() {
   } else if (active) {
     while (millis() < startTime + period) { 
         // Non-blocking wait period to ensure 3 second firing before closing solenoid 
-        readADC();
+        // readADC();
       }
       digitalWrite(SOLENOID_PIN, 0); // D9 Digital signal LOW to close solenoid
       active = false; // Reset active flag
