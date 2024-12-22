@@ -1,3 +1,12 @@
+12/22/24 Notes: 
+- Hotfire scheduled for next semseter
+- Need to include load cell reading and SD card in future (update Arduino code and solder after testing)
+
+Arduino Specific Notes: 
+- Pin 2 --> Button 
+- Pin 8 --> solenoid
+- Pin 9 --> e-match
+
 Arduino Nano 3.0 Microcontroller for use in BURPG intro project
 - Using SPI library to connect to SD card and HX711 Load Cell Reader (ADC)
   - CSB: pin 10 chip select pin
