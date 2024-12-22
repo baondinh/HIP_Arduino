@@ -12,21 +12,24 @@
 
 bool active = false; // Feedback variable
 
-// millis timings
+// millis tracking variable
 unsigned long startTime; 
-unsigned long runningTime;
 
-// Could also use analog pins
+// HX711 scale; 
+
+// Input
+const int BUTTON_PIN = 2; 
+
+// Output 
+const int EMATCH_PIN = 8; 
+const int SOLENOID_PIN = 4; 
+const int SELECT_PIN = 10; 
+
+// HX711 2 wire communication
+// Can use analog pins instead of 4, 5, and 6 to keep soldering clean
 // const int LOADCELL_DOUT_PIN = 4;
 // const int LOADCELL_SCK_PIN = 5;
 // const int ADC_OUT_PIN = 6; 
-// HX711 scale; 
-// const int limitValue = 100000; //trigger value (currently arbitrary number)
-
-const int BUTTON_PIN = 2; 
-const int EMATCH_PIN = 8; 
-const int SOLENOID_PIN = 4; 
-// const int SELECT_PIN = 10; 
 
 void setup(){
   Serial.begin(9600); // Serial communication 9600 bits per second
