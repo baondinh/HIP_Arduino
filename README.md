@@ -1,3 +1,5 @@
+Altium design
+
 12/22/24 Notes: 
 - Hotfire scheduled for next semseter
 - Need to include load cell reading and SD card in future (update Arduino code and solder after testing)
