@@ -19,3 +19,7 @@ Arduino Nano 3.0 Microcontroller for use in BURPG intro project
 - SPI.h and SPI.cpp can be found in ArduinoCore-avr/libraries repo (added to project directory for faster viewing)
 
 - https://forum.arduino.cc/t/what-is-the-simpelest-way-to-read-hx711-data/970254/2 for HX711 reading
+
+# Other Pictures of Nozzle and Measurements: 
+![Alt text](Pictures/Fixture.png?raw=true "Fixture")
+![Alt text](Pictures/NozzleData.png?raw=true "Nozzle Data")
