@@ -1,4 +1,5 @@
 Altium design
+![Alt text](Pictures/AltiumDesign.png?raw=true "Altium Design")
 
 12/22/24 Notes: 
 - Hotfire scheduled for next semseter
